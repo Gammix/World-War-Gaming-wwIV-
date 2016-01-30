@@ -46,10 +46,10 @@ main()
 #include <colors>
 #include <spectate>
 #include <gangzonesc>
-#include <spikestrip>
 #include <izcmd>
 #include <foreach>
 #include <progress2>
+#include <spikestrip>
 #include <timestamptodate>
 
 // Module
@@ -818,7 +818,7 @@ public OnGameModeInit()
 
 	//Area 51
 	CA_RemoveBuilding(3267, 354.4297, 2028.4922, 22.4141, 0.25);
-	
+
 	CA_Init();
 
 	SetWorldTime(7);
@@ -864,7 +864,7 @@ public OnGameModeInit()
 	yoursql_verify_column(SQL:0, "bans/expire", SQL_NUMBER);
 
 	gServerTimer = SetTimer("OnServerUpdate", 30000, true);
-	
+
 	txtNotify = TextDrawCreate(1.000000, 441.000000, gNotifications[0]);
 	TextDrawBackgroundColor(txtNotify, 255);
 	TextDrawFont(txtNotify, 2);
@@ -876,7 +876,7 @@ public OnGameModeInit()
 	TextDrawBoxColor(txtNotify, 84215240);
 	TextDrawTextSize(txtNotify, 650.000000, 0.000000);
 	TextDrawSetSelectable(txtNotify, 0);
-	
+
     txtBase[0] = TextDrawCreate(0.000000, 1.000000, "box");
 	TextDrawBackgroundColor(txtBase[0], 255);
 	TextDrawFont(txtBase[0], 1);
@@ -1577,11 +1577,11 @@ public OnGameModeInit()
 	printf("* Total capture zones: %i", sizeof(gZone));
 	printf("* Total ranks: %i", sizeof(gRank));
 	print("* ------------");
-	new keys[2], values[2];
+	new SQLRow:keys[2], values[2];
 	yoursql_sort_int(SQL:0, "users/ROW_ID", keys, values, .limit = 1);
-	printf("* Total user accounts: %i", keys[0]);
+	printf("* Total user accounts: %i", _:keys[0]);
 	yoursql_sort_int(SQL:0, "bans/ROW_ID", keys, values, .limit = 1);
-	printf("* Total banned accounts: %i", keys[0]);
+	printf("* Total banned accounts: %i", _:keys[0]);
 	print("============================================\n");
 
 	return 1;
@@ -1602,20 +1602,20 @@ public  OnServerUpdate()
 
 	    TextDrawSetString(txtNotify, gNotifications[gNotifyId]);
 	}
-	
+
 	gTimeGap++;
 	if (gTimeGap > 3 * 60)
 	{
 	    gTimeGap = 0;
-	    
+
 	    gTimeIdx++;
 	    gServerTime = gTime[gTimeIdx];
 	    gServerWeather = gWeather[gTimeIdx];
-	    
+
 	    new buf[150];
 	    format(buf, sizeof(buf), "Server time has been changed to %i and weather to %i.", gServerTime, gServerWeather);
 	    SendClientMessageToAll(COLOR_WHITE, buf);
-	    
+
 	    SetWorldTime(gServerTime);
 	    SetWeather(gServerWeather);
 	}
@@ -1727,17 +1727,17 @@ public OnPlayerConnect(playerid)
 {
 	new pname[MAX_PLAYER_NAME];
 	GetPlayerName(playerid, pname, MAX_PLAYER_NAME);
-	
+
 	new pip[18];
 	GetPlayerIp(playerid, pip, 18);
-	
+
 	new SQLRow:rowid = yoursql_multiget_row(SQL:0, "bans", "ss", "name", ReturnPlayerName(playerid), "ip", ReturnPlayerIp(playerid));
 	if (rowid != SQL_INVALID_ROW)
 	{
 	    if (yoursql_get_field_int(SQL:0, "bans/expire", rowid) != 0 && gettime() > yoursql_get_field_int(SQL:0, "bans/expire", rowid))
 	    {
 	        SendClientMessage(playerid, COLOR_GREEN, "You ban has been expired!");
-	        
+
 	        yoursql_delete_row(SQL:0, "bans", rowid);
 	    }
 	    else
@@ -1849,9 +1849,9 @@ public OnPlayerConnect(playerid)
 	}
 	else
 	{
-		new keys[2], values[2];
+		new SQLRow:keys[2], values[2];
 	    yoursql_sort_int(SQL:0, "bans/ROW_ID", keys, values, .limit = 1);
-		for (new i; i <= keys[0]; i++)
+		for (new i; i <= _:keys[0]; i++)
 		{
 		    new name[MAX_PLAYER_NAME];
 		    yoursql_get_field(SQL:0, "bans/name", SQLRow:i, name, MAX_PLAYER_NAME);
@@ -1868,7 +1868,7 @@ public OnPlayerConnect(playerid)
 				        SendClientMessage(playerid, COLOR_GREEN, "You rangeban has been expired!");
 
 				        yoursql_delete_row(SQL:0, "bans", SQLRow:i);
-				        
+
 				        break;
 				    }
 				    else
@@ -1950,7 +1950,7 @@ public OnPlayerConnect(playerid)
 		    }
 		}
 	}
-	
+
     ptxtCapture[playerid] = CreatePlayerTextDraw(playerid,455.000000, 242.000000, "Big Ear (13)~n~~g~Owned by: ~w~Asia~n~~r~Attacked by: ~w~Russia~n~~n~~y~Zone Bonus:~n~~w~Allows your team to be protected");
 	PlayerTextDrawBackgroundColor(playerid,ptxtCapture[playerid], 255);
 	PlayerTextDrawFont(playerid,ptxtCapture[playerid], 1);
@@ -2012,7 +2012,7 @@ public OnPlayerConnect(playerid)
             count = 0;
 		}
 	}
-	
+
 	ptxtStats[playerid] = CreatePlayerTextDraw(playerid,1.000000, 430.000000, "~b~United States ~h~~h~Corporal ~h~Sniper ~w~- Kills: 3344 - Deaths: 833 - Score: 1488/2500 - ~y~~h~Use /inv to open inventory");
 	PlayerTextDrawBackgroundColor(playerid,ptxtStats[playerid], 255);
 	PlayerTextDrawFont(playerid,ptxtStats[playerid], 2);
@@ -2072,7 +2072,7 @@ public OnPlayerConnect(playerid)
 	SendClientMessageToAll(COLOR_GREY, text);
 
 	pUpdateTimer[playerid] = SetTimerEx("OnPlayerTimeUpdate", 1000, true, "i", playerid);
-	
+
 	pRankLabel[playerid] = CreateDynamic3DTextLabel("*", 0, 0.0, 0.0, 0.5, 35.0, playerid);
 
 	pDonorLabel[playerid] = CreateDynamic3DTextLabel("*", 0, 0.0, 0.0, 0.7, 35.0, playerid);
@@ -2112,7 +2112,7 @@ public OnPlayerDisconnect(playerid, reason)
  	yoursql_set_field_int(SQL:0, "users/deaths", rowid, pStats[playerid][userDeaths]);
  	yoursql_set_field_int(SQL:0, "users/zones", rowid, pStats[playerid][userZones]);
 	yoursql_set_field_int(SQL:0, "users/headshots", rowid, pStats[playerid][userHeadshots]);
-	
+
 	new hours, minutes, seconds;
  	GetPlayerConnectedTime(playerid, hours, minutes, seconds);
  	hours += yoursql_get_field_int(SQL:0, "users/hours", rowid);
@@ -2173,21 +2173,21 @@ public  OnPlayerTimeUpdate(playerid)
 		new buf[150];
 		format(buf, sizeof(buf), "~r~Unjail in %i seconds", pStats[playerid][userJailTime]);
 		NotifyPlayer(playerid, buf, 0);
-		
+
 	   	if (pStats[playerid][userJailTime] == 0)
 		{
 			pStats[playerid][userJailTime] = -1;
 
 			format(buf, sizeof(buf), "%s(%i) has been released from jail.", ReturnPlayerName(playerid), playerid);
 			SendClientMessageToAll(COLOR_DODGER_BLUE, buf);
-			
+
 			NotifyPlayer(playerid, "~g~Unjailed!", 3000);
 
 			SpawnPlayer(playerid);
 			return;
 	  	}
 	}
-	
+
 	if (pStats[playerid][userMuteTime] > 0)
  	{
 		pStats[playerid][userMuteTime]--;
@@ -2203,7 +2203,7 @@ public  OnPlayerTimeUpdate(playerid)
 			NotifyPlayer(playerid, "~g~Unmuted!", 3000);
 	  	}
 	}
-	
+
 	if (pProtectTick[playerid])
 	{
 	    pProtectTick[playerid]--;
@@ -2240,7 +2240,7 @@ public  OnPlayerTimeUpdate(playerid)
 			{
 			    SendClientMessage(playerid, COLOR_CYAN, "[VIP] Premium health and armour recieved!");
 			}
-			
+
 			new buf[150];
 			format(buf, sizeof(buf), "%s\n%s", gRank[pRank[playerid]][rankName], gClass[pClass[playerid]][className]);
 			UpdateDynamic3DTextLabelText(pRankLabel[playerid], gTeam[pTeam[playerid]][teamColor], buf);
@@ -2255,7 +2255,7 @@ public  OnPlayerTimeUpdate(playerid)
             UpdateDynamic3DTextLabelText(pProtectLabel[playerid], COLOR_RED, buf);
 		}
 	}
-	
+
 	new buf[150];
 	format(buf, sizeof(buf), "~b~%s's ~h~~h~%s ~h~%s ~w~- Kills: %02i - Deaths: %02i - Score: %02i/%02i - ~y~~h~Type /inv to check your inventory item", gTeam[pTeam[playerid]][teamName], gRank[pRank[playerid]][rankName], gClass[pClass[playerid]][className], pStats[playerid][userKills], pStats[playerid][userDeaths], GetPlayerScore(playerid), gRank[((pRank[playerid] + 1) >= sizeof(gRank)) ? (sizeof(gRank)) : (pRank[playerid] + 1)][rankScore]);
 	PlayerTextDrawSetString(playerid, ptxtStats[playerid], buf);
@@ -2267,7 +2267,7 @@ public OnPlayerRequestClass(playerid, classid)
 
 	pInClass[playerid] = true;
 	pSpawn[playerid] = sizeof(gZone);
-	
+
     pStats[playerid][userGod] = false;
     pStats[playerid][userGodCar] = false;
     pStats[playerid][userOnDuty] = false;
@@ -2311,7 +2311,7 @@ public OnPlayerRequestClass(playerid, classid)
 		}
     }
 	TextDrawHideForPlayer(playerid, txtNotify);
-	
+
 	PlayerTextDrawHide(playerid, ptxtStats[playerid]);
 
 	for (new i; i < 50; i++)
@@ -2413,21 +2413,21 @@ public OnPlayerSpawn(playerid)
 		pSync[playerid] = false;
 	    return 1;
 	}
-	
+
 	pPremiumSupply[playerid] = false;
-	
+
 	pTrapped[playerid] = false;
 	KillTimer(pTrappedTimer[playerid]);
 	if (IsValidDynamicObject(pTrappedObject[playerid]))
 	{
 		DestroyDynamicObject(pTrappedObject[playerid]);
 	}
-	
+
 	for (new i, j = sizeof(menuInventoryModels); i < j; i++)
 	{
 	    pInventory[playerid][i] = 0;
 	}
-	
+
 	if (IsValidDynamicObject(pNetTrapObject[playerid][0]))
 	{
 		DestroyDynamicObject(pNetTrapObject[playerid][0]);
@@ -2572,9 +2572,9 @@ public OnPlayerSpawn(playerid)
 	        count[GetPlayerTeam(i)]++;
 	    }
 	}
-	
+
 	new buf[450];
-	
+
 	format(buf, sizeof(buf), "%s~n~~y~~h~~h~Players: %i", gTeam[0][teamName], count[0]);
 	TextDrawSetString(txtTeam[3], buf);
 	format(buf, sizeof(buf), "%s~n~~y~~h~~h~Players: %i", gTeam[1][teamName], count[1]);
@@ -2756,7 +2756,7 @@ public OnPlayerSpawn(playerid)
 	}
 
 	TextDrawShowForPlayer(playerid, txtNotify);
-	
+
 	PlayerTextDrawShow(playerid, ptxtStats[playerid]);
 
     if (pStats[playerid][userJailTime] > 0)
@@ -2771,7 +2771,7 @@ public OnPlayerSpawn(playerid)
 	    SendClientMessage(playerid, COLOR_DODGER_BLUE, buf);
 		return 1;
 	}
-	
+
 	if (pStats[playerid][userOnDuty])
     {
         SendClientMessage(playerid, COLOR_WHITE, " ");
@@ -2873,28 +2873,28 @@ public OnPlayerSpawn(playerid)
 		GetWeaponName(gClass[pClass[playerid]][classWeapon1][0], weapon_name, sizeof(weapon_name));
 	 	strcat(buf, weapon_name);
 	 	strcat(buf, ""WHITE", ");
-	 	
+
 	 	strcat(buf, SAMP_BLUE);
 		GetWeaponName(gClass[pClass[playerid]][classWeapon2][0], weapon_name, sizeof(weapon_name));
 	 	strcat(buf, weapon_name);
 	 	strcat(buf, ""WHITE", ");
-	 	
+
 	 	strcat(buf, SAMP_BLUE);
 		GetWeaponName(gClass[pClass[playerid]][classWeapon3][0], weapon_name, sizeof(weapon_name));
 	 	strcat(buf, weapon_name);
 	 	strcat(buf, ""WHITE", ");
-	 	
+
 	 	strcat(buf, SAMP_BLUE);
 		GetWeaponName(gClass[pClass[playerid]][classWeapon4][0], weapon_name, sizeof(weapon_name));
 	 	strcat(buf, weapon_name);
 	 	strcat(buf, ""WHITE", ");
-	 	
+
 	 	strcat(buf, SAMP_BLUE);
 		GetWeaponName(gClass[pClass[playerid]][classWeapon5][0], weapon_name, sizeof(weapon_name));
 	 	strcat(buf, weapon_name);
 		strcat(buf, ""WHITE".");
 		SendClientMessage(playerid, COLOR_WHITE, buf);
-		
+
 		if (pStats[playerid][userPremium])
 		{
 		    SendClientMessage(playerid, COLOR_CYAN, "[VIP] Premium ammunation, 3x ammo for every weapon!");
@@ -2969,7 +2969,7 @@ public OnPlayerSpawn(playerid)
 			strcat(buf, "No Weapon");
 			strcat(buf, ""WHITE", ");
 		}
-		
+
 		if (weapon[1])
 		{
 			strcat(buf, SAMP_BLUE);
@@ -2983,7 +2983,7 @@ public OnPlayerSpawn(playerid)
 			strcat(buf, "No Weapon");
 			strcat(buf, ""WHITE", ");
 		}
-		
+
 		if (weapon[2])
 		{
 			strcat(buf, SAMP_BLUE);
@@ -3068,11 +3068,11 @@ public OnPlayerSpawn(playerid)
 				SetPlayerArmour(playerid, gRank[pRank[playerid]][rankArmour]);
 			}
 			SetPlayerHealth(playerid, FLOAT_INFINITY);
-			
+
 			pProtectTick[playerid] = 10;
 			SendClientMessage(playerid, COLOR_WHITE, "Anti-Spawnkill Protection: 10 seconds. (if you shoot, protection will end instantly)");
 			NotifyPlayer(playerid, "Your spawn protection will end in ~y~10 seconds", 0);
-			
+
 			pProtectLabel[playerid] = CreateDynamic3DTextLabel("AntiSK for 10 seconds", COLOR_RED, 0.0, 0.0, 0.0, 35.0, playerid);
 			UpdateDynamic3DTextLabelText(pRankLabel[playerid], COLOR_WHITE, "*");
 		}
@@ -3229,7 +3229,7 @@ IsTeamFull(teamid)
 	        count[GetPlayerTeam(i)][1] = GetPlayerTeam(i);
 	    }
 	}
-	
+
     QuickSort_Pair(count, true, 0, MAX_TEAMS - 1);
 
     if (count[0][0] < count[1][0] + 2 && count[1][0] == teamid)
@@ -3240,7 +3240,7 @@ IsTeamFull(teamid)
     {
         return true;
     }
-    
+
 	return false;
 }
 
@@ -3279,7 +3279,7 @@ public OnPlayerClickTextDraw(playerid, Text:clickedid)
 			{
 			    return SendClientMessage(playerid, COLOR_TOMATO, "The team is full.");
 			}
-			
+
 		    pTeam[playerid] = 0;
 		    SelectPlayerTeam(playerid, 0);
 
@@ -3307,7 +3307,7 @@ public OnPlayerClickTextDraw(playerid, Text:clickedid)
 			{
 			    return SendClientMessage(playerid, COLOR_TOMATO, "The team is full.");
 			}
-			
+
 		    pTeam[playerid] = 1;
 		    SelectPlayerTeam(playerid, 1);
 
@@ -3787,7 +3787,7 @@ public 	OnPlayerMenuResponse(playerid, menuid, response, listitem)
 				        {
 							return SendClientMessage(playerid, COLOR_TOMATO, "You can't carry more than 7 medickits.");
 				        }
-				        
+
 				        if (GetPlayerMoney(playerid) < 1500)
 				        {
 							return SendClientMessage(playerid, COLOR_TOMATO, "You can't afford this item.");
@@ -4135,7 +4135,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				yoursql_set_field(SQL:0, "users/password", rowid, hash);
 			 	yoursql_set_field_int(SQL:0, "users/score", rowid, 15);
 			 	yoursql_set_field_int(SQL:0, "users/money", rowid, 50000);
-			 	
+
                 new date[3];
 				getdate(date[2], date[1], date[0]);
 
@@ -4155,11 +4155,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				    case 11: month = "November";
 				    case 12: month = "December";
 				}
-				
+
 				new register_on[25];
 				format(register_on, sizeof(register_on), "%02d %s, %d", date[0], month, date[2]);
 			 	yoursql_set_field(SQL:0, "users/register_on", rowid, register_on);
-			 	
+
 			 	pStats[playerid][userAdmin] = 0;
 			 	pStats[playerid][userPremium] = false;
 			 	pStats[playerid][userKills] = 0;
@@ -4469,7 +4469,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	                format(info, sizeof(info), "You must be rank %d+ to be a %s.", gClass[listitem][classRank], gClass[listitem][className]);
 	                return SendClientMessage(playerid, COLOR_TOMATO, info);
 	            }
-	            
+
 	            if (pClass[playerid] == listitem)
 	            {
 					return SendClientMessage(playerid, COLOR_TOMATO, "You already using that class.");
@@ -4845,19 +4845,19 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			        ShowPlayerDialog(playerid, DIALOG_ID_MUSICBOX, DIALOG_STYLE_INPUT, "Music box streamer:", ""WHITE"Insert a "LIME"URL. "WHITE"to start streaming.\n\nPress "RED"RANDOM "WHITE"to stream random radio station.", "Stream", "Random");
 			        return SendClientMessage(playerid, COLOR_TOMATO, "The URL length must be grater than 6.");
 			    }
-			    
+
 			    pMusicBoxURL[playerid][0] = EOS;
 				strcat(pMusicBoxURL[playerid], inputtext);
-				
+
 				new Float:x, Float:y, Float:z;
 				GetDynamicObjectPos(pMusicBoxObject[playerid], x, y, z);
 
 	        	format(info, sizeof(info), "[Music box] Streaming started, Hosted by %s(%i).", ReturnPlayerName(playerid), playerid);
-	        	
+
 				foreach (new i : Player)
 				{
 				    PlayAudioStreamForPlayer(i, inputtext, x, y, z);
-				    
+
 				    if (IsPlayerInDynamicArea(i, pMusicBoxAreaid[playerid]))
 				    {
 						SendClientMessage(i, COLOR_ORANGE, info);
@@ -4904,7 +4904,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 					 	format(buf, sizeof(buf), "Admin %s(%i) has organized a TDM. event - COPS VS. TERRORISTS.", ReturnPlayerName(playerid), playerid);
 						SendClientMessageToAll(COLOR_AQUA, buf);
 						SendClientMessageToAll(COLOR_AQUA, "Type /join to join the event.");
-						
+
 						SendRconCommand("loadfs event_tdm0");
 	                }
 	            }*/
@@ -5061,19 +5061,19 @@ SyncPlayer(playerid, Float:health = 0.0, Float:armour = 0.0)
 {
    	new Float:x, Float:y, Float:z;
     GetPlayerPos(playerid, x, y, z);
-    
+
     new Float:a;
 	GetPlayerFacingAngle(playerid, a);
-	
+
 	new interior = GetPlayerInterior(playerid);
 	new world = GetPlayerVirtualWorld(playerid);
-	
+
 	new weapon[13], ammo[13];
 	for (new i; i < 13; i++)
 	{
  		GetPlayerWeaponData(playerid, i, weapon[i], ammo[i]);
 	}
-	
+
 	if (health == 0.0)
 	{
 		GetPlayerHealth(playerid, health);
@@ -5082,20 +5082,20 @@ SyncPlayer(playerid, Float:health = 0.0, Float:armour = 0.0)
 	{
 		GetPlayerArmour(playerid, armour);
 	}
-	
+
 	new skin = GetPlayerSkin(playerid);
 	new color = GetPlayerColor(playerid);
-	
+
 	pSync[playerid] = true;
 	SpawnPlayer(playerid);
-	
+
    	SetPlayerPos(playerid, x, y, z);
-   	
+
 	SetPlayerFacingAngle(playerid, a);
-	
+
 	SetPlayerInterior(playerid, interior);
 	SetPlayerVirtualWorld(playerid, world);
-	
+
 	for (new i; i < 13; i++)
 	{
 	    if (weapon[i] && ammo[i])
@@ -5103,10 +5103,10 @@ SyncPlayer(playerid, Float:health = 0.0, Float:armour = 0.0)
  			GivePlayerWeapon(playerid, weapon[i], ammo[i]);
 		}
 	}
-	
+
 	SetPlayerHealth(playerid, health);
 	SetPlayerArmour(playerid, armour);
-	
+
 	SetPlayerSkin(playerid, skin);
 	SetPlayerColor(playerid, color);
 }
@@ -5196,7 +5196,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 	{
 		DestroyDynamicObject(pTrappedObject[playerid]);
 	}
-	
+
 	if (IsValidDynamicObject(pNetTrapObject[playerid][0]))
 	{
 		DestroyDynamicObject(pNetTrapObject[playerid][0]);
@@ -5301,7 +5301,7 @@ public OnPlayerDeath(playerid, killerid, reason)
         DestroyVehicle(pBuildMode[playerid]);
     }
     pBuildMode[playerid] = 0;
-    
+
     pSync[playerid] = false;
 
     Menu_Hide(playerid);
@@ -5337,7 +5337,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 
 		return 1;
 	}
-	
+
 	if (0 <= GetPlayerTeam(playerid) < MAX_TEAMS)
 	{
 	    switch (GetVehicleModel(GetPlayerVehicleID(killerid)))
@@ -5349,14 +5349,14 @@ public OnPlayerDeath(playerid, killerid, reason)
 				    SendClientMessage(playerid, COLOR_YELLOW, "You were killed in a base rape, your stats are recovered.");
 				    SendClientMessage(playerid, COLOR_YELLOW, "You are now continuing on your same position.");
                     SyncPlayer(playerid, gRank[pRank[playerid]][rankHealth], gRank[pRank[playerid]][rankArmour]);
-				    
+
 				    SendClientMessage(killerid, COLOR_TOMATO, "Base rape isn't allowed. You have been respawned as a punishment.");
 				    SpawnPlayer(killerid);
 					return 1;
 				}
 			}
 		}
-		
+
 		new Float:x, Float:y, Float:z;
 		GetPlayerPos(playerid, x, y, z);
 
@@ -5387,7 +5387,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 	new buf[150];
 	format(buf, sizeof(buf), "%s\n%s", gRank[pRank[playerid]][rankName], gClass[pClass[playerid]][className]);
 	UpdateDynamic3DTextLabelText(pRankLabel[playerid], gTeam[pTeam[playerid]][teamColor], buf);
-    
+
 	if (pKiller[playerid][0] != INVALID_PLAYER_ID)
 	{
 	    killerid = pKiller[playerid][0];
@@ -5426,7 +5426,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 		SendClientMessage(killerid, COLOR_GREEN, buf);
 		format(buf, sizeof(buf), "You have gained +1 score and +$%i for the kill.", money);
 	    SendClientMessage(killerid, COLOR_GREEN, buf);
-	    
+
 	    if (pStats[killerid][userPremium])
 	    {
 			money = 500 + random(500);
@@ -5436,7 +5436,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 			format(buf, sizeof(buf), "[VIP] Extra +1 score and +$%i as premium reward!", money);
 			SendClientMessage(killerid, COLOR_CYAN, buf);
 		}
-	
+
 		new weaponid = GetPlayerWeapon(killerid);
         pWeaponsSpree[killerid][GetWeaponSlot(weaponid)]++;
 	    switch (pWeaponsSpree[killerid][GetWeaponSlot(weaponid)])
@@ -5528,7 +5528,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	    }
 	    return 1;
 	}
-	
+
 	new keys, updown, leftright;
 	GetPlayerKeys(playerid, keys, updown, leftright);
 	if (keys & KEY_LOOK_BEHIND && keys & KEY_AIM)
@@ -5673,7 +5673,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		    }
 		}
 	}
-	
+
 	if (GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
 	{
 	    if (newkeys & KEY_NO)
@@ -5684,13 +5684,13 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	            {
 	                new weapon_name[35];
 	                GetWeaponName(gDropWeaponid[i], weapon_name, sizeof(weapon_name));
-	                
+
 	                new buf[150];
 	                strcat(buf, "You picked up ");
 	                strcat(buf, weapon_name);
 	                strcat(buf, ".");
 	                SendClientMessage(playerid, COLOR_GREEN, buf);
-	            
+
 	                GivePlayerWeapon(playerid, gDropWeaponid[i], gDropAmount[playerid]);
 
 					DestroyDynamicObject(gDropObject[i]);
@@ -5765,7 +5765,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart)
 			        amount -= (amount/100) * 15;
 			        SetPlayerHealth(playerid, hp - amount);
 			    }
-			    
+
 			    if (pHasHelmet[playerid])
 			    {
 			        return SendClientMessage(playerid, COLOR_WHITE, "The player is wearing a protection helmet, he/she won't die instantly.");
@@ -5866,7 +5866,7 @@ public OnVehicleDamageStatusUpdate(vehicleid, playerid)
 	{
     	UpdateVehicleDamageStatus(vehicleid, 0, 0, 0, 0);
 	}
-	
+
 	return 1;
 }
 
@@ -5964,7 +5964,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 	    	RepairVehicle(GetPlayerVehicleID(playerid));
 	    	SetVehicleHealth(GetPlayerVehicleID(playerid), 1000.0);
 		}
-	
+
 		new modelid = GetVehicleModel(GetPlayerVehicleID(playerid));
 		if (modelid == 447)
 		{
@@ -5973,7 +5973,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		        new text[150];
 		        format(text, sizeof(text), "You must be a %s to drive sea-sparrow.", gClass[4][className]);
 		        SendClientMessage(playerid, COLOR_TOMATO, text);
-		       
+
 		        new Float:x, Float:y, Float:z;
 				GetPlayerPos(playerid, x, y, z);
 				SetPlayerPos(playerid, x, y, z + 3.0);
@@ -6109,7 +6109,7 @@ public OnPlayerEnterRaceCheckpoint(playerid)
 			}
 		}
 	}
-	
+
 	return 1;
 }
 
@@ -6249,7 +6249,7 @@ public  OnZoneUpdate(zoneid)
 		SendClientMessage(gZone[zoneid][zoneAttacker], COLOR_GREEN, "You have successfully captured the zone, +3 score and +$3000.");
 		SetPlayerScore(gZone[zoneid][zoneAttacker], GetPlayerScore(gZone[zoneid][zoneAttacker]) + 3);
 		GivePlayerMoney(gZone[zoneid][zoneAttacker], 3000);
-		
+
 		pStats[gZone[zoneid][zoneAttacker]][userZones]++;
 
 		NotifyPlayer(gZone[zoneid][zoneAttacker], "Zone successfully ~g~captured ~w~~h~!", 3000);
@@ -6326,7 +6326,7 @@ public OnPlayerLeaveDynamicCP(playerid, checkpointid)
 							strcat(text, gTeam[gZone[i][zoneOwner]][teamName]);
 							strcat(text, ".");
 							SendClientMessageToAll(COLOR_ORANGE_RED, text);
-							
+
 							text[0] = EOS;
 							strcat(text, gZone[i][zoneName]);
 							strcat(text, "\n");
@@ -6555,7 +6555,7 @@ CMD:armour(playerid, params[])
 	{
 	    return 1;
 	}
-	
+
 	if (pDuel[playerid][duelActive])
 	{
 	    return SendClientMessage(playerid, COLOR_TOMATO, "You can't perform this command while in a duel.");
@@ -7073,7 +7073,7 @@ CMD:rank(playerid)
 	new buf[150];
 	format(buf, sizeof(buf), "Your rank: %s (%i), Score: %i, Health: %f, Armour: %f.", gRank[pRank[playerid]][rankName], pRank[playerid], gRank[pRank[playerid]][rankScore], gRank[pRank[playerid]][rankHealth], gRank[pRank[playerid]][rankArmour]);
 	SendClientMessage(playerid, COLOR_YELLOW, buf);
-	
+
 	return 1;
 }
 
@@ -7121,7 +7121,7 @@ CMD:chelp(playerid)
 	strcat(buf, gClass[pClass[playerid]][className]);
 	strcat(buf, " class help -");
 	SendClientMessage(playerid, COLOR_GREEN, buf);
-	
+
 	switch (pClass[playerid])
 	{
 	    case 0:
@@ -7177,7 +7177,7 @@ CMD:unlocks(playerid)
 	strcat(info, buf);
 	format(buf, sizeof(buf), ""WHITE"Unlock class "GREEN"%s "WHITE"on rank "GREEN"%i "WHITE"(%s).", gClass[5][className], gClass[5][classRank], gRank[gClass[5][classRank]][rankName]);
 	strcat(info, buf);
-	
+
 	ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "Unlocks info.", info, "Close", "");
 
 	return 1;
@@ -7186,10 +7186,10 @@ CMD:unlocks(playerid)
 bool:IsPlayerNearAnyEnemy(playerid)
 {
 	new team = GetPlayerTeam(playerid);
-	
+
 	new Float:x, Float:y, Float:z;
 	GetPlayerPos(playerid, x, y, z);
-	
+
 	foreach (new i : Player)
 	{
 	    if (i != playerid)
@@ -7203,7 +7203,7 @@ bool:IsPlayerNearAnyEnemy(playerid)
 	        }
 	    }
 	}
-	
+
 	return false;
 }
 
@@ -7288,7 +7288,7 @@ CMD:ss(playerid)
 	{
 	    return 1;
 	}
-	
+
 	if (pInClass[playerid] || GetPlayerState(playerid) == PLAYER_STATE_SPECTATING)
 	{
 	    return 1;
@@ -7343,7 +7343,7 @@ CMD:sync(playerid)
     SendClientMessage(playerid, COLOR_GREEN, "Syncing...");
     SyncPlayer(playerid);
     SendClientMessage(playerid, COLOR_GREEN, "Synchronized (/stats restored)!");
-    
+
     return 1;
 }
 
@@ -7672,7 +7672,7 @@ CMD:givegun(playerid, params[])
 	{
 	    return SendClientMessage(playerid, COLOR_TOMATO, "You must be on foot to use this command.");
 	}
-	
+
 	new target, amount;
 	if (sscanf(params, "ui", target, amount))
 	{
@@ -7713,7 +7713,7 @@ CMD:givegun(playerid, params[])
 
 	SetPlayerAmmo(playerid, weapon, -ammo);
 	GivePlayerWeapon(target, weapon, ammo);
-	
+
 	new weapon_name[35];
 	GetWeaponName(weapon, weapon_name, sizeof(weapon_name));
 
@@ -7737,7 +7737,7 @@ CMD:givemoney(playerid, params[])
 	{
 	    return SendClientMessage(playerid, COLOR_TOMATO, "You must be on foot to use this command.");
 	}
-	
+
 	new target, amount;
 	if (sscanf(params, "ui", target, amount))
 	{
@@ -7875,7 +7875,7 @@ CMD:mk(playerid)
 	{
 	    return 1;
 	}
-	
+
 	new text[150];
 	format(text, sizeof(text), "** (RADIO) (%i) %s: I have marked my radar icon with YELLOW color.", playerid, ReturnPlayerName(playerid));
 
@@ -7899,10 +7899,10 @@ CallAirstrike(playerid, Float:x, Float:y, Float:z)
 	pAirstrike[playerid][asPosX] = x;
 	pAirstrike[playerid][asPosY] = y;
 	pAirstrike[playerid][asPosZ] = z;
-	
+
     new flare = CreateDynamicObject(18728, x, y, z, 0.0, 0.0, 0.0);
 	SetTimerEx("OnAirstrikeFlareExpire", 3500, false, "i", flare);
-	
+
 	pAirstrike[playerid][asPlaneObject] = CreateDynamicObject(14553, x - 55.0, y, z + 100.0, 90.0, 0.0, 0.0);
  	MoveDynamicObject(pAirstrike[playerid][asPlaneObject], x + 250.0, y, z + 100.0, 25.0);
 
@@ -7937,12 +7937,12 @@ CMD:as(playerid)
 	{
 	    return SendClientMessage(playerid, COLOR_TOMATO, "You must be on foot to use this command.");
 	}
-	
+
 	if (GetPlayerMoney(playerid) < 15000)
 	{
 	    return SendClientMessage(playerid, COLOR_TOMATO, "You cannot afford an airstrike worth $15000.");
 	}
-	
+
 	if (gettime() - pAirstrike[playerid][asLastStrike] < 60 * 5)
 	{
 	    return SendClientMessage(playerid, COLOR_TOMATO, "You must wait 5 minutes after using an airstrike.");
@@ -7950,15 +7950,15 @@ CMD:as(playerid)
 
 	new Float:x, Float:y, Float:z;
 	GetPlayerPos(playerid, x, y, z);
-	
+
 	new Float:CA_z;
 	CA_FindZ_For2DCoord(x, y, CA_z);
-	
+
 	if (CA_z > z + 5.0 || CA_z < z - 5.0)
 	{
 	    return ShowPlayerDialog(playerid, DIALOG_ID_AIRSTRIKE, DIALOG_STYLE_MSGBOX, "Airstrike warning:", ""WHITE"Your airstrike request will be accomplished but the strike can't reach your current position.\nPress '"GREEN"ACCEPT"WHITE"' to continue and make an airstrike on possible ground (above you).\n\n"TOMATO"This dialog usually appears when you are inside a building with roof.", "Accept", "Cancel");
 	}
-	
+
 	CallAirstrike(playerid, x, y, CA_z);
 	pAirstrike[playerid][asLastStrike] = gettime();
 	pAirstrike[playerid][asCalled] = true;
@@ -7968,7 +7968,7 @@ CMD:as(playerid)
 	SendClientMessage(playerid, COLOR_YELLOW, "You have requested an airstrike at your position, get cover.");
 	SendClientMessage(playerid, COLOR_YELLOW, "The strike will happen in 5 seconds at the flare position.");
 	SendClientMessage(playerid, COLOR_TOMATO, "The airstrike cost you -$15000.");
-		    
+
 	new text[150];
 	format(text, sizeof(text), "** (%i) %s have requested an airstrike.", playerid, ReturnPlayerName(playerid));
 
@@ -8092,7 +8092,7 @@ CMD:lootpack(playerid)
 	{
 	    return SendClientMessage(playerid, COLOR_TOMATO, "You must be on foot to use this command.");
 	}
-	
+
 	foreach (new i : Player)
 	{
 	    if (pCarepack[i][cpCalled])
@@ -8121,7 +8121,7 @@ CMD:lootpack(playerid)
 					    DestroyDynamicObject(pCarepack[i][cpPlaneObject]);
 						DestroyDynamicObject(pCarepack[i][cpObject]);
 			 			DestroyDynamic3DTextLabel(pCarepack[i][cpLabel]);
-			 			
+
 			 			pCarepack[i][cpCalled] = false;
 					    return 1;
 					}
@@ -8170,7 +8170,7 @@ public OnDynamicObjectMoved(objectid)
 		            {
 		                SendClientMessage(p, COLOR_TOMATO, "You were killed in the airstrike.");
 					    NotifyPlayer(p, "You got ~r~Airstriked", 5000);
-					    
+
 					    format(text, sizeof(text), "Your dynamite killed %s(%i), +$500.", ReturnPlayerName(p), p);
 						SendClientMessage(i, COLOR_GREEN, text);
 						GivePlayerMoney(i, 500);
@@ -8184,7 +8184,7 @@ public OnDynamicObjectMoved(objectid)
 						pKiller[p][1] = 51;
 		            }
 		        }
-		        
+
 		        pAirstrike[i][asCalled] = false;
 
 				break;
@@ -8212,7 +8212,7 @@ public OnDynamicObjectMoved(objectid)
 			}
 		}
 	}
-	
+
 	return 1;
 }
 
@@ -8269,7 +8269,7 @@ CMD:acmds(playerid, params[])
 	{
 	    return 1;
 	}
-	
+
 	if (! IsPlayerAdmin(playerid) && pStats[playerid][userAdmin] < 1)
 	{
         return SendClientMessage(playerid, COLOR_TOMATO, "You must be an admin to use this command.");
@@ -8322,7 +8322,7 @@ CMD:onduty(playerid)
 	{
 	    return 1;
 	}
-	
+
 	if (! IsPlayerAdmin(playerid) && pStats[playerid][userAdmin] < 1)
 	{
 	    return SendClientMessage(playerid, COLOR_TOMATO, "You must be admin level 1+ to use this command.");
@@ -9193,12 +9193,12 @@ CMD:aka(playerid, params[])
 		return SendClientMessage(playerid, COLOR_THISTLE, "USAGE: /aka [player]");
 	}
 
-	new keys[1], values[1];
+	new SQLRow:keys[1], values[1];
 	yoursql_sort_int(SQL:0, "users/ROW_ID", keys, values, .limit = 1);
 	new ip[18];
 	new aka_count;
 	new aka[MAX_PLAYER_NAME * 5];
-	for (new i; i <= keys[0]; i++)
+	for (new i; i <= _:keys[0]; i++)
 	{
 	    if (yoursql_get_field(SQL:0, "users/ip", SQLRow:i, ip, 18))
 	    {
@@ -9496,7 +9496,7 @@ CMD:givecar(playerid, params[])
 	{
 	    return 1;
 	}
-	
+
 	if (! IsPlayerAdmin(playerid) && pStats[playerid][userAdmin] < 2)
 	{
 	    return SendClientMessage(playerid, COLOR_TOMATO, "You must be admin level 2+ to use this command.");
@@ -9568,7 +9568,7 @@ CMD:car(playerid, params[])
 	{
 	    return 1;
 	}
-	
+
 	if (! IsPlayerAdmin(playerid) && pStats[playerid][userAdmin] < 2)
 	{
 	    return SendClientMessage(playerid, COLOR_TOMATO, "You must be admin level 2+ to use this command.");
@@ -9627,7 +9627,7 @@ CMD:akill(playerid, params[])
 	{
 	    return 1;
 	}
-	
+
 	if (! IsPlayerAdmin(playerid) && pStats[playerid][userAdmin] < 2)
 	{
 	    return SendClientMessage(playerid, COLOR_TOMATO, "You must be admin level 2+ to use this command.");
@@ -10255,22 +10255,22 @@ CMD:ban(playerid, params[])
 	{
 		return SendClientMessage(playerid, COLOR_TOMATO, "You can't ban yourself.");
 	}
-	
+
 	if (pStats[playerid][userAdmin] < pStats[targetid][userAdmin])
 	{
 		return SendClientMessage(playerid, COLOR_TOMATO, "You cannot use this command on higher level admin.");
 	}
-	
+
 	if (days < 0)
 	{
 		return SendClientMessage(playerid, COLOR_TOMATO, "Invalid days, must be greater than 0 for temp ban, or 0 for permanent ban.");
 	}
-	
+
 	if (strlen(reason) < 3 || strlen(reason) > 35)
 	{
 		return SendClientMessage(playerid, COLOR_TOMATO, "Invalid reason length, must be b/w 0-35 characters.");
 	}
-	
+
 	new bandate[18], date[3], time;
 	getdate(date[0], date[1], date[2]);
 
@@ -10473,7 +10473,7 @@ CMD:oban(playerid, params[])
 
 	new bandate[18], date[3], time;
 	getdate(date[0], date[1], date[2]);
-	
+
 	new month[15];
 	switch (date[1])
 	{
@@ -10490,7 +10490,7 @@ CMD:oban(playerid, params[])
 	    case 11: month = "November";
 	    case 12: month = "December";
 	}
-	
+
 	format(bandate, sizeof(bandate), "%02i %s, %i", date[2], month, date[0]);
 
 	if (days == 0)
@@ -10538,7 +10538,7 @@ CMD:searchban(playerid, params[])
 	{
 		return SendClientMessage(playerid, COLOR_THISTLE, "USAGE: /searchban [name/ip]");
 	}
-	
+
 	new SQLRow:rowid;
 	if (IsValidIp(search))
 	{
@@ -10556,13 +10556,13 @@ CMD:searchban(playerid, params[])
 		    return SendClientMessage(playerid, COLOR_TOMATO, "The specified name isn't banned.");
 		}
 	}
-	
+
 	new buf[1000];
 	strcat(buf, WHITE);
-	
+
 	strcat(buf, "You have been banned from the server.\n");
 	strcat(buf, "If this was a mistake (from server/admin side), please report a BAN APPEAL on our forums.\n\n");
-	
+
 	if (IsValidIp(search))
 	{
 		strcat(buf, "Username: "PINK"");
@@ -10570,7 +10570,7 @@ CMD:searchban(playerid, params[])
 		yoursql_get_field(SQL:0, "bans/name", rowid, name, MAX_PLAYER_NAME);
 		strcat(buf, name);
 		strcat(buf, "\n"WHITE"");
-		
+
 		strcat(buf, "Ip: "PINK"");
 		strcat(buf, search);
 		strcat(buf, "\n"WHITE"");
@@ -10580,16 +10580,16 @@ CMD:searchban(playerid, params[])
 		strcat(buf, "Username: "PINK"");
  	    strcat(buf, search);
 		strcat(buf, "\n"WHITE"");
-		
+
 		strcat(buf, "Ip: "PINK"");
 	    new ip[18];
 		yoursql_get_field(SQL:0, "bans/ip", rowid, ip);
 		strcat(buf, ip);
 		strcat(buf, "\n"WHITE"");
  	}
- 	
+
  	new value[100];
- 	
+
 	strcat(buf, "Ban date: "PINK"");
 	yoursql_get_field(SQL:0, "bans/date", rowid, value);
 	strcat(buf, value);
@@ -10670,11 +10670,11 @@ CMD:searchban(playerid, params[])
 	yoursql_get_field(SQL:0, "bans/reason", rowid, value);
 	strcat(buf, value);
 	strcat(buf, "\n\n"WHITE"");
-	
+
 	strcat(buf, "Take a screenshot of this as a refrence for admins.");
-	
+
 	ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "Ban search result:", buf, "Close", "");
-	
+
 	return 1;
 }
 
@@ -11500,7 +11500,7 @@ CMD:setkills(playerid, params[])
 
 	yoursql_set_field_int(SQL:0, "users/kills", yoursql_get_row(SQL:0, "users", "name = %s", ReturnPlayerName(targetid)), amount);
 	pStats[playerid][userKills] = amount;
-	
+
 	PlayerPlaySound(targetid, 1057, 0.0, 0.0, 0.0);
 	PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
 
@@ -11537,7 +11537,7 @@ CMD:setdeaths(playerid, params[])
 
 	yoursql_set_field_int(SQL:0, "users/deaths", yoursql_get_row(SQL:0, "users", "name = %s", ReturnPlayerName(targetid)), amount);
 	pStats[playerid][userDeaths] = amount;
-	
+
 	PlayerPlaySound(targetid, 1057, 0.0, 0.0, 0.0);
 	PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
 
@@ -11832,7 +11832,7 @@ CMD:ripban(playerid, params[])
 	        break;
 	    }
 	}
-	
+
 	new buf[150];
 	if (! days)
 	{
@@ -11853,7 +11853,7 @@ CMD:ripban(playerid, params[])
 	PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
 
 	Kick(id);
-	
+
 	return 1;
 }
 
@@ -12058,12 +12058,12 @@ CMD:setpass(playerid, params[])
 	{
 		return SendClientMessage(playerid, COLOR_TOMATO, "You cannot use this command on higher level admin.");
 	}
-	
+
 	if (strlen(newpass) < 4 || strlen(newpass) > 30)
 	{
 		return SendClientMessage(playerid, COLOR_TOMATO, "Invalid password length, must be b/w 4-30 characters.");
 	}
-	
+
 	new hash[128];
 	SHA256_PassHash(newpass, "aafGEsq13", hash, sizeof(hash));
 	yoursql_set_field(SQL:0, "bans/password", rowid, hash);
@@ -12073,7 +12073,7 @@ CMD:setpass(playerid, params[])
 	SendClientMessage(playerid, COLOR_DODGER_BLUE, buf);
 
 	PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
-	
+
 	return 1;
 }
 
@@ -12145,7 +12145,7 @@ CMD:setalltime(playerid, params[])
         PlayerPlaySound(i, 1057, 0.0, 0.0, 0.0);
 		SetPlayerTime(i, id, 0);
 	}
-	
+
 	gTimeGap = 0;
 	gServerTime = id;
 
@@ -12247,12 +12247,12 @@ GetXYInFrontOfPlayer(playerid, &Float:x, &Float:y, Float:distance)
 	new Float:a;
 	GetPlayerPos(playerid, x, y, a);
 	GetPlayerFacingAngle(playerid, a);
-	
+
 	if (GetPlayerVehicleID(playerid))
 	{
  		GetVehicleZAngle(GetPlayerVehicleID(playerid), a);
 	}
-	
+
 	x += (distance * floatsin(-a, degrees));
 	y += (distance * floatcos(-a, degrees));
 }
@@ -12303,7 +12303,7 @@ CMD:destroyobject(playerid, params[])
 	{
 	    return 1;
 	}
-	
+
 	if (! IsPlayerAdmin(playerid) && pStats[playerid][userAdmin] < 4)
 	{
 	    return SendClientMessage(playerid, COLOR_TOMATO, "You must be admin level 4+ to use this command.");
@@ -12336,7 +12336,7 @@ CMD:editobject(playerid, params[])
 	{
 	    return 1;
 	}
-	
+
 	if (! IsPlayerAdmin(playerid) && pStats[playerid][userAdmin] < 4)
 	{
 	    return SendClientMessage(playerid, COLOR_TOMATO, "You must be admin level 4+ to use this command.");
@@ -12766,7 +12766,7 @@ CMD:autologin(playerid, params[])
 	{
 	    return 1;
 	}
-	
+
 	ShowPlayerDialog(playerid, DIALOG_ID_AUTO_LOGIN, DIALOG_STYLE_MSGBOX, "Autologin confirmation:", "Press "GREEN"ENABLE "WHITE"to switch auto login on or "RED"DISABLE "WHITE"to off.\n\nAutologin allows you to directly login without entering password when your ip is matching to the one registered with.", "Enable", "Disable");
 	return 1;
 }
@@ -12961,7 +12961,7 @@ CMD:stats(playerid, params[])
 	{
 		ratio = floatdiv(pStats[targetid][userKills], pStats[targetid][userDeaths]);
 	}
-	
+
  	new team[35];
 	if (0 <= pTeam[targetid] < MAX_TEAMS)
 	{
@@ -12971,7 +12971,7 @@ CMD:stats(playerid, params[])
 	{
 		team = "No Team";
 	}
-	
+
 	format(buf, sizeof(buf), "Team: %s, Class: %s, Rank: %s(%i), Score: %i, Money: $%i, Kills: %i, Deaths: %i, Ratio: %0.2f", team, gClass[pClass[targetid]][className], gRank[pRank[targetid]][rankName], pRank[targetid], GetPlayerScore(targetid), GetPlayerMoney(targetid), pStats[targetid][userKills], pStats[targetid][userDeaths], ratio);
 	SendClientMessage(playerid, COLOR_GREEN, buf);
 
@@ -12992,7 +12992,7 @@ CMD:stats(playerid, params[])
 			default: admin_rank = "Server Owner";
 	    }
  	}
- 	
+
  	new premium[5];
  	if (pStats[targetid][userPremium])
  	{
@@ -13002,7 +13002,7 @@ CMD:stats(playerid, params[])
 	{
 		premium = "No";
 	}
-	
+
  	new hours, minutes, seconds;
  	GetPlayerConnectedTime(targetid, hours, minutes, seconds);
  	hours += yoursql_get_field_int(SQL:0, "users/hours", rowid);
@@ -13018,13 +13018,13 @@ CMD:stats(playerid, params[])
 	        hours++;
 	    }
 	}
-	
+
 	format(buf, sizeof(buf), "Zones Captured: %i, Headshots: %i, Admin Level: %i (%s), Premium: %s, Time Played: %i hours, %i minutes, %i seconds", pStats[targetid][userZones], pStats[targetid][userHeadshots], pStats[targetid][userAdmin], admin_rank, premium, hours, minutes, seconds);
 	SendClientMessage(playerid, COLOR_GREEN, buf);
 
 	new register_on[25];
 	yoursql_get_field(SQL:0, "users/register_on", rowid, register_on);
-	
+
 	new helmet[5];
  	if (pHasHelmet[targetid])
  	{
@@ -13034,7 +13034,7 @@ CMD:stats(playerid, params[])
 	{
 		helmet = "No";
 	}
-	
+
 	new mask[5];
  	if (pHasMask[targetid])
  	{
@@ -13044,7 +13044,7 @@ CMD:stats(playerid, params[])
 	{
 		mask = "No";
 	}
-	
+
 	format(buf, sizeof(buf), "Registeration Date: %s, Helmet: %s, Gas Mask: %s", register_on, helmet, mask);
 	SendClientMessage(playerid, COLOR_GREEN, buf);
 	return 1;
@@ -13188,7 +13188,7 @@ CMD:trap(playerid)
 	{
 		return SendClientMessage(playerid, COLOR_TOMATO, "You have 2 active nettraps, you should destroy one before planting a new trap (/destroytrap).");
 	}
-	
+
 	SendClientMessage(playerid, COLOR_GREEN, "You have placed a nettrap at your ground (it will auto destroy after 10 minutes if vaccent).");
     SendClientMessage(playerid, COLOR_GREEN, "You can also destroy the nettrap by '/destroytrap [id]'.");
 
@@ -13286,7 +13286,7 @@ CMD:dynamite(playerid)
  	}
 
 	SendClientMessage(playerid, COLOR_TOMATO, "You have 3 active dynamites, you should destroy one before planting a new dynamite (/destroydynamite).");
-	
+
 	return 1;
 }
 
@@ -13347,21 +13347,21 @@ CMD:det(playerid, params[])
 	{
 		new Float:x, Float:y, Float:z;
 		GetDynamicObjectPos(pDynamiteObject[playerid][index - 1], x, y, z);
-		
+
 		if (! IsPlayerInRangeOfPoint(playerid, 100.0, x, y, z))
 		{
 		    return SendClientMessage(playerid, COLOR_TOMATO, "You are not close enough to detonate the specified dynamite id (Range: 100m).");
 		}
-		
+
 		CreateExplosion(x, y, z, 6, 5);
 		CreateExplosion(x, y + 2, z, 6, 5);
 
 		new buf[150];
 		format(buf, sizeof(buf), "You have detonated your dynamite %i.", index);
 		SendClientMessage(playerid, COLOR_GREEN, buf);
-		
+
 		format(buf, sizeof(buf), "You were killed by the dynamite placed by %s(%i).", ReturnPlayerName(playerid), playerid);
-		
+
 		new team = GetPlayerTeam(playerid);
 		foreach (new i : Player)
 		{
@@ -13369,7 +13369,7 @@ CMD:det(playerid, params[])
 		    {
       			SendClientMessage(i, COLOR_TOMATO, buf);
 				NotifyPlayer(i, "You got ~r~Dynamited!", 5000);
-				
+
 				format(buf, sizeof(buf), "Your dynamite killed %s(%i), +$500.", ReturnPlayerName(i), i);
 				SendClientMessage(playerid, COLOR_GREEN, buf);
 				GivePlayerMoney(playerid, 500);
@@ -13406,9 +13406,9 @@ CMD:ammo(playerid)
 	{
 	    return SendClientMessage(playerid, COLOR_TOMATO, "You don't have a ammunation refiller with you.");
 	}
-	
+
 	pInventory[playerid][3] = 0;
-	
+
 	new wname[35];
 	new buf[150];
 	new weapon ,ammo;
@@ -13473,13 +13473,13 @@ CMD:drug(playerid)
 	new Float:oldy = y;
 
 	GetXYInFrontOfPlayer(playerid, x, y, 2.0);
-	
+
 	CreatePickup(1241, 4, x, y, z, 0);
-	
+
 	SetPlayerPos(playerid, oldx, oldy, z);
-	
+
 	pInventory[playerid][4]--;
-	
+
 	SendClientMessage(playerid, COLOR_GREEN, "You have created a drug bundle, pick it up for craziness!");
 
 	return 1;
@@ -13620,14 +13620,14 @@ CMD:music(playerid)
 	{
 	    return SendClientMessage(playerid, COLOR_TOMATO, "You don't have a musicbox with you.");
 	}
-	
+
 	if (IsValidDynamicObject(pMusicBoxObject[playerid]))
 	{
 		if (! IsPlayerInDynamicArea(playerid, pMusicBoxAreaid[playerid]))
 		{
 		    return SendClientMessage(playerid, COLOR_TOMATO, "You must be near your musicbox.");
 		}
-		
+
 	    DestroyDynamicObject(pMusicBoxObject[playerid]);
 	    foreach (new i : Player)
 	    {
@@ -13638,7 +13638,7 @@ CMD:music(playerid)
 	    }
 	    DestroyDynamicArea(pMusicBoxAreaid[playerid]);
 	    DestroyDynamic3DTextLabel(pMusicBoxLabel[playerid]);
-	    
+
 	    SendClientMessage(playerid, COLOR_RED, "You have picked up your musicbox. (use /music again to drop it)");
 	}
 	else
@@ -13648,21 +13648,21 @@ CMD:music(playerid)
 	    GetPlayerFacingAngle(playerid, a);
 
 		GetXYInFrontOfPlayer(playerid, x, y, 2.0);
-		
+
 	    pMusicBoxObject[playerid] = CreateDynamicObject(2226, x, y, z - 1.0, 0, 0, a + 180.0, 0, GetPlayerInterior(playerid));
-		
+
         pMusicBoxAreaid[playerid] = CreateDynamicSphere(x, y, z, 50.0, 0, GetPlayerInterior(playerid));
 
         new text[100];
         format(text, sizeof(text), "%s(%i)'s musicbox", ReturnPlayerName(playerid), playerid);
         pMusicBoxLabel[playerid] = CreateDynamic3DTextLabel(text, COLOR_ORANGE, x, y, z, 50.0, .worldid = 0, .interiorid = GetPlayerInterior(playerid));
-        
+
         pMusicBoxURL[playerid][0] = EOS;
 		ShowPlayerDialog(playerid, DIALOG_ID_MUSICBOX, DIALOG_STYLE_INPUT, "Music box streamer:", ""WHITE"Insert a "LIME"URL. "WHITE"to start streaming.\n\nPress "RED"RANDOM "WHITE"to stream random radio station.", "Stream", "Random");
 
 	    SendClientMessage(playerid, COLOR_GREEN, "You have placed your musicbox. (use /music again to pick it up)");
 	}
-	
+
 	return 1;
 }
 
@@ -13754,13 +13754,13 @@ CMD:dropgun(playerid)
 	{
 	    return 1;
 	}
-	
+
 	new w = GetPlayerWeapon(playerid);
 	new a = GetPlayerAmmo(playerid);
-	
+
 	new Float:x, Float:y, Float:z;
 	GetPlayerPos(playerid, x, y, z);
-	
+
 	switch (w)
 	{
 		case 1..15:
@@ -13781,13 +13781,13 @@ CMD:dropgun(playerid)
 
 	new weapon_name[35];
 	GetWeaponName(w, weapon_name, sizeof(weapon_name));
-	
+
 	new buf[150];
 	strcat(buf, "You dropped weapon ");
 	strcat(buf, weapon_name);
 	strcat(buf, ".");
 	SendClientMessage(playerid, COLOR_YELLOW, buf);
-	
+
 	return 1;
 }
 
@@ -13870,7 +13870,7 @@ CMD:inv(playerid)
 	{
 		strcat(info, ""RED"NO (0)\n");
 	}
-	
+
 	strcat(info, ""WHITE"Gas Mask: ");
 	if (pHasMask[playerid])
 	{
@@ -14025,7 +14025,7 @@ CMD:inv(playerid)
 	{
 		strcat(info, ""RED"NO (0)\n\n");
 	}
-	
+
 	ShowPlayerDialog(playerid, 0, DIALOG_STYLE_MSGBOX, "Inventory items list:", info, "Close", "");
 	return 1;
 }
@@ -14036,7 +14036,7 @@ CMD:event(playerid)
 	{
 	    return SendClientMessage(playerid, COLOR_TOMATO, "You must be admin level 4+ to use this command.");
 	}
-	
+
 	new info[1000];
 	strcat(info, "Cops Vs. Terrorists (event_tdm0.amx)\n");
 	strcat(info, "Grove Vs. Ballas (event_tdm1.amx)\n");
@@ -14062,7 +14062,7 @@ CMD:event(playerid)
 	strcat(info, "Last Of Us 2 (event_lou1.amx)\n");
 	strcat(info, "Last Of Us 3 (event_lou2.amx)");
 	ShowPlayerDialog(playerid, DIALOG_ID_EVENT, DIALOG_STYLE_LIST, "Select an event to organize:", info, "Select", "Cancel");
-	
+
 	return 1;
 }
 
@@ -14114,7 +14114,7 @@ CMD:healteam(playerid, params[])
 		}
 		return SendClientMessage(playerid, COLOR_THISTLE, buf);
 	}
-	
+
 	foreach (new i : Player)
 	{
 	    if (! pInClass[i] && GetPlayerTeam(i) == teamid)
@@ -14182,7 +14182,7 @@ CMD:armourteam(playerid, params[])
 		}
 		return SendClientMessage(playerid, COLOR_THISTLE, buf);
 	}
-	
+
 	foreach (new i : Player)
 	{
 	    if (! pInClass[i] && GetPlayerTeam(i) == teamid)
@@ -14250,7 +14250,7 @@ CMD:disarmteam(playerid, params[])
 		}
 		return SendClientMessage(playerid, COLOR_THISTLE, buf);
 	}
-	
+
 	foreach (new i : Player)
 	{
 	    if (! pInClass[i] && GetPlayerTeam(i) == teamid)
@@ -14454,7 +14454,7 @@ CMD:freezeteam(playerid, params[])
 		}
 		return SendClientMessage(playerid, COLOR_THISTLE, buf);
 	}
-	
+
 	foreach (new i : Player)
 	{
 	    if (i != playerid && GetPlayerTeam(i) == teamid)
@@ -14808,7 +14808,7 @@ CMD:giveteamcash(playerid, params[])
 			PlayerPlaySound(i, 1057, 0.0, 0.0, 0.0);
 	    }
 	}
-	
+
 	PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
 
 	new string[144];
@@ -14825,7 +14825,7 @@ CMD:giveteamweapon(playerid, params[])
 	{
 	    return 1;
 	}
-	
+
 	if (! IsPlayerAdmin(playerid) && pStats[playerid][userAdmin] < 4)
 	{
 	    return SendClientMessage(playerid, COLOR_TOMATO, "You must be admin level 4+ to use this command.");
@@ -15051,7 +15051,7 @@ CMD:dlabel(playerid, params[])
 	{
     	UpdateDynamic3DTextLabelText(pDonorLabel[playerid], COLOR_CYAN, text);
     }
-    
+
     new buf[150];
     format(buf, sizeof(buf), "[VIP] You have updated your donor label to %s.", text);
     SendClientMessage(playerid, COLOR_CYAN, buf);
@@ -15267,7 +15267,7 @@ CMD:dsupply(playerid, params[])
 	{
 	    return 1;
 	}
-	
+
 	if (! pStats[playerid][userPremium])
 	{
 		return SendClientMessage(playerid, COLOR_TOMATO, "You must be a premium user to use this command.");
@@ -15280,7 +15280,7 @@ CMD:dsupply(playerid, params[])
 
 	new Float:x, Float:y, Float:z;
 	GetPlayerPos(playerid, x, y, z);
-	
+
 	new buf[150];
 	format(buf, sizeof(buf),"** Premium supply from %s[%d]!", ReturnPlayerName(playerid), playerid);
 
@@ -15299,7 +15299,7 @@ CMD:dsupply(playerid, params[])
 			{
 				SetPlayerArmour(playerid, (100.0 - val >= 25.0) ? (val + 25.0) : (val + (100.0 - val)));
 			}
-			
+
 			GetPlayerHealth(i, val);
 			if (val < 100.0)
 			{
@@ -15325,7 +15325,7 @@ CMD:dcolor(playerid, params[])
 	{
 	    return 1;
 	}
-	
+
 	if (! pStats[playerid][userPremium])
 	{
 		return SendClientMessage(playerid, COLOR_TOMATO, "You must be a premium user to use this command.");
@@ -15362,12 +15362,12 @@ public OnPlayerEnterDynamicArea(playerid, areaid)
            	{
                 new weapon_name[35];
                 GetWeaponName(gDropWeaponid[i], weapon_name, sizeof(weapon_name));
-                
+
                 new buf[150];
                 strcat(buf, "Press ~b~~k~~CONVERSATION_NO~ ~w~~h~to pickup ~b~");
                 strcat(buf, weapon_name);
                 NotifyPlayer(playerid, buf, 5000);
-                
+
 				break;
 			}
 	   	}
@@ -15407,12 +15407,12 @@ public OnPlayerEnterDynamicArea(playerid, areaid)
 
 							format(buf, sizeof(buf), "Player %s(%i) has been exploded in your landmine %i.", ReturnPlayerName(playerid), playerid, t);
 							SendClientMessage(i, COLOR_YELLOW, buf);
-							
+
 							new Float:x, Float:y, Float:z;
 							GetDynamicObjectPos(pLandmineObject[i][t], x, y, z);
 							CreateExplosion(x, y, z, 6, 5);
 							CreateExplosion(x, y + 2, z, 6, 5);
-							
+
 							SetPlayerHealth(playerid, 0.0);
 
 							pKiller[playerid][0] = i;
@@ -15426,7 +15426,7 @@ public OnPlayerEnterDynamicArea(playerid, areaid)
 			   			}
 			        }
 		        }
-		        
+
 		        if (! IsPlayerInAnyVehicle(i))
 		        {
 			        for (new t; t < 2; t++)
@@ -15464,7 +15464,7 @@ public OnPlayerEnterDynamicArea(playerid, areaid)
       		}
 		}
 	}
-	
+
 	return 1;
 }
 
@@ -15482,7 +15482,7 @@ public OnPlayerLeaveDynamicArea(playerid, areaid)
 			}
 	   	}
 	}
-	
+
 	foreach (new i : Player)
 	{
 	    if (areaid == pMusicBoxAreaid[i])
@@ -15492,7 +15492,7 @@ public OnPlayerLeaveDynamicArea(playerid, areaid)
 			return 1;
 	    }
 	}
-	
+
 	return 1;
 }
 
